@@ -3,9 +3,49 @@ guid: 38857fe1cc0ba394e90186ef2076c206
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Eff_Avatar_Robin_00_Skill02_Feather_01
+    second: {fileID: 2100000, guid: 2d7d6115777f8e04785a6688fd7d5622, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_EyeShadow
+    second: {fileID: 2100000, guid: 36525758bf2b4f54ea6a9ab81a9946bd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_FaceMask
+    second: {fileID: 2100000, guid: 02b0add4ac341d54b8173df9379ae56a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Robin_00_Mat_Body_D
+    second: {fileID: 2100000, guid: 5d8375d4dc311ef438bae8b4a90c1d2e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Robin_00_Mat_Body_S
+    second: {fileID: 2100000, guid: 0ec6bdf098b834141a17a7544b01d882, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Robin_00_Mat_Face
+    second: {fileID: 2100000, guid: 81c111244eda9c64d9adaa08928b89cf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Robin_00_Mat_Hair
+    second: {fileID: 2100000, guid: 148635fa2f5c59e41b0b6d99a12eda78, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Robin_00_Mat_Weapon
+    second: {fileID: 2100000, guid: 49f5201811ce93e428f435bf541f8289, type: 2}
   materials:
-    materialImportMode: 2
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
