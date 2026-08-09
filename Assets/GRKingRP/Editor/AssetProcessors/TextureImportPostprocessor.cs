@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Presets;
@@ -8,82 +7,105 @@ namespace GRKingRP.Editor.AssetProcessors
 {
     internal sealed class TextureImportPostprocessor : AssetPostprocessor
     {
-        public override uint GetVersion() => 4u;
+        public override uint GetVersion() => 7u;
 
         private void OnPreprocessTexture()
         {
-            string normalizedAssetPath = assetPath.Replace('\\', '/');
-            
-            //判断是否在指定目录下
-            if (!normalizedAssetPath.StartsWith(
-                    AssetProcessorGlobalSettings.TextureImportRootFolder,
-                    StringComparison.OrdinalIgnoreCase))
+            TextureImportSettings settings =
+                AssetProcessorGlobalSettings.LoadTextureSettings();
+            if (settings == null)
+            {
+                context.DependsOnArtifact(
+                    AssetProcessorGlobalSettings.TextureSettingsAssetPath);
+                return;
+            }
+
+            if (assetImporter is not TextureImporter textureImporter)
             {
                 return;
             }
 
-            //判断是否为TextureImporter，获取textureImporter
-            if (assetImporter is not TextureImporter textureImporter)
+            //是否在指定目录下
+            if (!AssetProcessorUtility.IsAssetPathUnderFolder(
+                    assetPath,
+                    settings.TextureImportRootFolder,
+                    out string normalizedAssetPath))
+            {
+                return;
+            }
+
+            context.DependsOnArtifact(
+                AssetProcessorGlobalSettings.TextureSettingsAssetPath);
+
+            if (settings.Rules == null)
             {
                 return;
             }
 
             string textureName = Path.GetFileNameWithoutExtension(normalizedAssetPath);
 
-            //遍历纹理导入规则，判断当前纹理的name是否有匹配的规则
-            foreach (TextureImportRule rule in AssetProcessorGlobalSettings.TextureImportRules)
+            //遍历规则，如果有适配的规则，则应用预设
+            foreach (TextureImportRule rule in settings.Rules)
             {
-                if (!rule.TryMatch(textureName))
+                if (rule == null || !rule.TryMatch(textureName))
                 {
                     continue;
                 }
 
-                //应用preset到textureImporter
                 ApplyPreset(textureImporter, rule);
                 break;
             }
         }
 
+        //应用预设
         private void ApplyPreset(TextureImporter textureImporter, TextureImportRule rule)
         {
-            if (string.IsNullOrWhiteSpace(rule.PresetPath))
+            Preset presetReference = rule.Preset;
+            if (presetReference == null)
             {
                 Debug.LogWarning(
-                    $"[GRKingRP Texture Import] Rule '{rule.NameGlob}' has no Preset assigned for {assetPath}.",
+                    $"[GRKingRP Texture Import] Rule '{rule.NameGlob}' has no Preset " +
+                    $"assigned for {assetPath}.",
                     textureImporter);
                 return;
             }
 
-            //获取预设
-            Preset preset = AssetDatabase.LoadAssetAtPath<Preset>(rule.PresetPath);
-
-            if (preset == null)
+            string presetPath = AssetDatabase.GetAssetPath(presetReference);
+            if (string.IsNullOrEmpty(presetPath))
             {
-                // The Preset can still be importing during the same AssetDatabase refresh.
-                context.DependsOnArtifact(rule.PresetPath);
-                // Debug.LogWarning(
-                //     $"[GRKingRP Texture Import] Preset not found: {rule.PresetPath}. " +
-                //     $"It will be retried when the Preset artifact becomes available.",
-                //     textureImporter);
+                Debug.LogError(
+                    $"[GRKingRP Texture Import] Rule '{rule.NameGlob}' references an " +
+                    $"invalid Preset for {assetPath}.",
+                    textureImporter);
                 return;
             }
 
-            //不能应用预设
+            // Load through AssetDatabase during this import so Unity can track that
+            // the Preset artifact is actually consumed by the importer.
+            Preset preset = AssetDatabase.LoadAssetAtPath<Preset>(presetPath);
+            if (preset == null)
+            {
+                // The Preset may still be importing. Registering the missing artifact
+                // makes Unity retry this texture when that artifact becomes available.
+                context.DependsOnArtifact(presetPath);
+                return;
+            }
+
             if (!preset.CanBeAppliedTo(textureImporter))
             {
-                // Keep tracking the path so replacing the incompatible Preset retries the texture.
-                context.DependsOnArtifact(rule.PresetPath);
                 Debug.LogError(
-                    $"[GRKingRP Texture Import] {rule.PresetPath} is not a TextureImporter Preset.",
+                    $"[GRKingRP Texture Import] {presetPath} is not a TextureImporter Preset.",
                     preset);
                 return;
             }
 
             if (preset.ApplyTo(textureImporter))
             {
-                // Presets are native assets, so this must use the imported artifact dependency.
-                context.DependsOnArtifact(rule.PresetPath);//建立当前纹理和preset直接的依赖
+                // Presets are native assets, so their imported artifact is the
+                // dependency that must invalidate this texture.
+                context.DependsOnArtifact(presetPath);
             }
         }
+
     }
 }

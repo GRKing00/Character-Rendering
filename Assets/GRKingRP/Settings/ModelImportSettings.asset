@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3864007cc555f6148be1ba479eaacaad, type: 3}
+  m_Name: ModelImportSettings
+  m_EditorClassIdentifier: 
+  ModelImportRootFolder: Assets/Models/
+  PrefabOutputRootFolder: Assets/Prefabs/
+  MaterialOutputRootFolder: Assets/Materials/
+  VerboseLogging: 0
+  Rules:
+  - Enabled: 1
+    NameGlob: Art_*
+    IgnoreCase: 1
+    Preset: {fileID: 2655988077585873504, guid: e761bb90a4a2fac4aaa66f01aa6bca39,
+      type: 2}
+    AutoBakeSmoothedNormals: 1
+    SmoothedNormalStorage: 0
+    AutoCreatePrefab: 1
+    AutoCreateMaterials: 1
+    MaterialTemplate: {fileID: 0}

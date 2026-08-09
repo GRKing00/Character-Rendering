@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb36c56672bf4e468493edc173a4733, type: 3}
+  m_Name: TextureImportSettings
+  m_EditorClassIdentifier: 
+  TextureImportRootFolder: Assets/Textures/
+  Rules:
+  - Enabled: 1
+    NameGlob: '*_Color*'
+    IgnoreCase: 1
+    Preset: {fileID: 2655988077585873504, guid: c85259cac39ee8f4face43bece028232,
+      type: 2}
+  - Enabled: 1
+    NameGlob: '*_Ramp*'
+    IgnoreCase: 1
+    Preset: {fileID: 2655988077585873504, guid: fbf2f2581812c8a499b3c781539c7b96,
+      type: 2}
+  - Enabled: 1
+    NameGlob: '*_LightMap*'
+    IgnoreCase: 1
+    Preset: {fileID: 2655988077585873504, guid: 18f555b94e3ab054998c4684539c1f95,
+      type: 2}
+  - Enabled: 1
+    NameGlob: '*_Face_ExpressionMap*'
+    IgnoreCase: 1
+    Preset: {fileID: 2655988077585873504, guid: f6bc2ae84d8cdb245a5fd5b29c1484f4,
+      type: 2}
+  - Enabled: 1
+    NameGlob: '*_FaceMap*'
+    IgnoreCase: 1
+    Preset: {fileID: 2655988077585873504, guid: 8c89f7554c3bbd64da4d50d1a01a436d,
+      type: 2}

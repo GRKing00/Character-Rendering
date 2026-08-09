@@ -6,15 +6,6 @@
       "source": "local",
       "dependencies": {}
     },
-    "com.jasonma.outlinenormalsmoother": {
-      "version": "file:D:/TA/tool/Unity/OutlineNormalSmoother",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.collections": "2.1.0",
-        "com.unity.mathematics": "1.2.0"
-      }
-    },
     "com.unity.burst": {
       "version": "1.8.21",
       "depth": 1,
