@@ -18,7 +18,7 @@ MonoBehaviour:
   VerboseLogging: 0
   Rules:
   - Enabled: 1
-    NameGlob: Art_*
+    NameGlob: Art_* | Avatar_*
     IgnoreCase: 1
     Preset: {fileID: 2655988077585873504, guid: e761bb90a4a2fac4aaa66f01aa6bca39,
       type: 2}

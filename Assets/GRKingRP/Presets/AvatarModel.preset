@@ -418,7 +418,6 @@ Preset:
   - m_AnimationRetargetingWarnings
   - m_AnimationDoRetargetingWarnings
   - m_ImportAnimatedCustomProperties
-  - m_ImportConstraints
   - m_AnimationCompression
   - m_AnimationRotationError
   - m_AnimationPositionError
@@ -470,11 +469,9 @@ Preset:
   - blendShapeNormalImportMode
   - normalSmoothingSource
   - m_ReferencedClips
-  - m_ImportAnimation
   - m_HumanDescription
   - m_LastHumanDescriptionAvatarSource
   - m_AutoGenerateAvatarMappingIfUnspecified
-  - m_AnimationType
   - m_HumanoidOversampling
   - m_AvatarSetup
   - m_AddHumanoidExtraRootOnlyWhenUsingAvatar
@@ -484,3 +481,6 @@ Preset:
   - m_UserData
   - m_AssetBundleName
   - m_AssetBundleVariant
+  - m_ImportConstraints
+  - m_ImportAnimation
+  - m_AnimationType
