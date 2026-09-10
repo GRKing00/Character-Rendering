@@ -5,11 +5,20 @@ using UnityEngine.Rendering.Universal;
 namespace GRKingRP.RendererFeatures
 {
     /// <summary>
-    /// GRKingRP 的统一渲染入口。目前只负责后处理，其他渲染功能之后在此扩展。
+    /// GRKingRP 的统一渲染入口，管理角色绘制和后处理。
     /// </summary>
     [DisallowMultipleRendererFeature("GRKingRP")]
     public sealed class GRKingRendererFeature : ScriptableRendererFeature
     {
+        [Header("Character Rendering")]
+        public bool EnableCharacterRendering = true;
+        public bool EnableCharacterOutline = true;
+        [Tooltip("选择参与自定义角色绘制的 GameObject Layer。")]
+        public LayerMask CharacterLayerMask = -1;
+
+        private GRKingCharacterDrawPass m_CharacterBodyPass;
+        private GRKingCharacterDrawPass m_CharacterOutlinePass;
+
         [Header("Post Processing")]
         [Tooltip("开启后，根据当前相机的 Volume 设置将后处理 Pass 加入渲染队列。")]
         public bool EnablePostProcessing = true;
@@ -32,6 +41,10 @@ namespace GRKingRP.RendererFeatures
         {
             // Inspector 修改配置等操作会重复调用 Create，先释放旧 Pass 的材质和 RTHandle。
             DisposePostProcessingPass();
+            m_CharacterBodyPass = new GRKingCharacterDrawPass(
+                "GRKingRP Character Body", "GRKingCharacterBody", CharacterLayerMask);
+            m_CharacterOutlinePass = new GRKingCharacterDrawPass(
+                "GRKingRP Character Outline", "GRKingCharacterOutline", CharacterLayerMask);
 
 #if UNITY_EDITOR
             // 编辑器中自动补齐引用，并由 Renderer Data 资产序列化保存。
@@ -61,6 +74,13 @@ namespace GRKingRP.RendererFeatures
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+            if (EnableCharacterRendering)
+            {
+                renderer.EnqueuePass(m_CharacterBodyPass);
+                if (EnableCharacterOutline)
+                    renderer.EnqueuePass(m_CharacterOutlinePass);
+            }
+
             // Setup 会检查相机类型和当前 Volume 的后效激活状态。
             // 自定义后处理不依赖 Camera 和 Renderer Data 的 URP 内置后处理开关。
             // 此时不读取 cameraColorTargetHandle，由 Pass 在 Execute 阶段获取。
