@@ -82,9 +82,12 @@ MonoBehaviour:
   m_Active: 1
   EnableCharacterRendering: 1
   EnableCharacterOutline: 1
+  EnableCharacterHair: 1
+  EnableFrontHairShadow: 1
+  FrontHairShadowDownsample: 2
   CharacterLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 64
   EnablePostProcessing: 1
   m_BloomShader: {fileID: 4800000, guid: 610954a7cc6247f79e9e83a349a8992c, type: 3}
   m_ToneMappingShader: {fileID: 4800000, guid: 86fc01afb311de745a47b71091140e8d, type: 3}

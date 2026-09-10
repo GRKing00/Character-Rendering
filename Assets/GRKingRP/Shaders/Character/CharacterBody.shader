@@ -18,6 +18,31 @@ Shader "GRKingRP/Character/Body"
         [Sub(Lighting)] _RampWarmWeight("Warm Weight", Range(0,1)) = 0
         [SubToggle(Lighting)] _UseVertexAO("Use Vertex R AO", Float) = 1
 
+        [Main(RimLight, _, on, off)] _RimLight("Rim Light", Float) = 0
+        [SubToggle(RimLight)] _RimEnabled("Enabled", Float) = 1
+        [Sub(RimLight)] [HDR] _RimColor("Color", Color) = (1,1,1,1)
+        [Sub(RimLight)] _RimIntensity("Intensity", Range(0,5)) = 0.5
+        [Sub(RimLight)] _RimWidth("Width", Range(0,1)) = 0.3
+        [Sub(RimLight)] _RimSoftness("Softness", Range(0.001,0.5)) = 0.05
+        [Sub(RimLight)] _RimDark("Shadow Intensity", Range(0,1)) = 0.5
+
+        [Main(Emission, _, on, off)] _Emission("Emission (Base Alpha)", Float) = 0
+        [SubToggle(Emission)] _EmissionEnabled("Enabled", Float) = 0
+        [Sub(Emission)] [HDR] _EmissionColor("Color", Color) = (1,1,1,1)
+        [Sub(Emission)] _EmissionThreshold("Base Alpha Threshold", Range(0,1)) = 1
+        [Sub(Emission)] _EmissionIntensity("Intensity", Range(0,20)) = 0
+
+        [Main(Stockings, _, on, off)] _Stockings("Stockings", Float) = 0
+        [SubToggle(Stockings)] _StockingsEnabled("Enabled", Float) = 0
+        [Tex(Stockings)] _StockingsMap("Range Map (R Mask, G Highlight, B Roughness)", 2D) = "black" {}
+        [Sub(Stockings)] _StockingsColor("Color", Color) = (1,1,1,1)
+        [Sub(Stockings)] _StockingsDarkColor("Dark Rim Color", Color) = (1,1,1,1)
+        [Sub(Stockings)] _StockingsDarkWidth("Dark Rim Width", Range(0,0.96)) = 0.5
+        [Sub(Stockings)] _StockingsPower("Power", Range(0.04,1)) = 1
+        [Sub(Stockings)] _StockingsLightWidth("Highlight Width", Range(1,32)) = 1
+        [Sub(Stockings)] _StockingsLightIntensity("Highlight Intensity", Range(0,1)) = 0.25
+        [Sub(Stockings)] _StockingsRoughness("Roughness", Range(0,1)) = 1
+
         [Main(Outline, _, on, off)] _Outline("Outline", Float) = 0
         [SubToggle(Outline)] _OutlineEnabled("Enabled", Float) = 1
         [Sub(Outline)] _OutlineWidth("Width", Range(0,5)) = 1
@@ -124,6 +149,22 @@ Shader "GRKingRP/Character/Body"
             #pragma fragment CharacterBodyOutlineFragment
             #pragma shader_feature_local_fragment _ _ALPHATEST_ON
             #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "Character Body Rim Depth"
+            Tags { "LightMode"="GRKingCharacterBodyDepth" }
+            Cull [_Cull]
+            ZWrite On
+            ZTest LEqual
+            ColorMask 0
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex CharacterVertex
+            #pragma fragment CharacterDepthFragment
+            #pragma shader_feature_local_fragment _ _ALPHATEST_ON
             #pragma multi_compile_instancing
             ENDHLSL
         }

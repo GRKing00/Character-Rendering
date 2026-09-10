@@ -14,9 +14,11 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _BACKFACEUV2_ON
+  - _EMISSIONENABLED_ON
   - _OUTLINEENABLED_ON
   - _OUTLINEUSETANGENT_ON
   - _OUTLINEUSEVERTEXALPHA_ON
+  - _RIMENABLED_ON
   - _USEVERTEXAO_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -84,6 +86,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _StockingsMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -112,6 +118,10 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _Emission: 0
+    - _EmissionEnabled: 0
+    - _EmissionIntensity: 0
+    - _EmissionThreshold: 1
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -138,6 +148,12 @@ Material:
     - _QueueOffset: 0
     - _RampWarmWeight: 1
     - _ReceiveShadows: 1
+    - _RimDark: 0.5
+    - _RimEnabled: 1
+    - _RimIntensity: 0.5
+    - _RimLight: 0
+    - _RimSoftness: 0.05
+    - _RimWidth: 0.3
     - _Shininess0: 32
     - _Shininess1: 32
     - _Shininess2: 32
@@ -167,6 +183,13 @@ Material:
     - _SpecularSoftness7: 0.05
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
+    - _Stockings: 0
+    - _StockingsDarkWidth: 0.5
+    - _StockingsEnabled: 0
+    - _StockingsLightIntensity: 0.25
+    - _StockingsLightWidth: 1
+    - _StockingsPower: 1
+    - _StockingsRoughness: 1
     - _Surface: 0
     - _UseVertexAO: 1
     - _WorkflowMode: 1
@@ -175,7 +198,7 @@ Material:
     - _BackColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor0: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
     - _OutlineColor1: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
     - _OutlineColor2: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
@@ -184,6 +207,7 @@ Material:
     - _OutlineColor5: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
     - _OutlineColor6: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
     - _OutlineColor7: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor0: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor1: {r: 1, g: 1, b: 1, a: 1}
@@ -193,6 +217,8 @@ Material:
     - _SpecularColor5: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor6: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor7: {r: 1, g: 1, b: 1, a: 1}
+    - _StockingsColor: {r: 1, g: 1, b: 1, a: 1}
+    - _StockingsDarkColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &3296502522969178889
 MonoBehaviour:

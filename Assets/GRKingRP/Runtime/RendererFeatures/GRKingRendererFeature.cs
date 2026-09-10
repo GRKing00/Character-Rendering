@@ -14,9 +14,15 @@ namespace GRKingRP.RendererFeatures
         public bool EnableCharacterRendering = true;
         public bool EnableCharacterOutline = true;
         public bool EnableCharacterHair = true;
+        public bool EnableScreenSpaceRim = true;
+        public bool EnableFrontHairShadow = true;
+        public GRKingHairDepthPass.DownsampleMode FrontHairShadowDownsample =
+            GRKingHairDepthPass.DownsampleMode.Half;
         [Tooltip("选择参与自定义角色绘制的 GameObject Layer。")]
         public LayerMask CharacterLayerMask = -1;
 
+        private GRKingBodyDepthPass m_BodyDepthPass;
+        private GRKingHairDepthPass m_HairDepthPass;
         private GRKingCharacterDrawPass m_CharacterBodyPass;
         private GRKingCharacterDrawPass m_CharacterEyeStencilPass;
         private GRKingCharacterDrawPass m_CharacterHairOpaquePass;
@@ -45,6 +51,10 @@ namespace GRKingRP.RendererFeatures
         {
             // Inspector 修改配置等操作会重复调用 Create，先释放旧 Pass 的材质和 RTHandle。
             DisposePostProcessingPass();
+            DisposeBodyDepthPass();
+            DisposeHairDepthPass();
+            m_BodyDepthPass = new GRKingBodyDepthPass(CharacterLayerMask);
+            m_HairDepthPass = new GRKingHairDepthPass(CharacterLayerMask);
             m_CharacterBodyPass = new GRKingCharacterDrawPass(
                 "GRKingRP Character Body", "GRKingCharacterBody", CharacterLayerMask);
             m_CharacterEyeStencilPass = new GRKingCharacterDrawPass(
@@ -86,6 +96,17 @@ namespace GRKingRP.RendererFeatures
         {
             if (EnableCharacterRendering)
             {
+                bool enableScreenSpaceRim = EnableScreenSpaceRim &&
+                    !renderingData.cameraData.isPreviewCamera;
+                bool enableFrontHairShadow = EnableCharacterHair &&
+                    EnableFrontHairShadow &&
+                    !renderingData.cameraData.isPreviewCamera;
+
+                m_BodyDepthPass.Setup(enableScreenSpaceRim);
+                renderer.EnqueuePass(m_BodyDepthPass);
+                m_HairDepthPass.Setup(enableFrontHairShadow, FrontHairShadowDownsample);
+                renderer.EnqueuePass(m_HairDepthPass);
+
                 renderer.EnqueuePass(m_CharacterBodyPass);
                 if (EnableCharacterHair)
                 {
@@ -107,7 +128,21 @@ namespace GRKingRP.RendererFeatures
 
         protected override void Dispose(bool disposing)
         {
+            DisposeBodyDepthPass();
+            DisposeHairDepthPass();
             DisposePostProcessingPass();
+        }
+
+        private void DisposeBodyDepthPass()
+        {
+            m_BodyDepthPass?.Dispose();
+            m_BodyDepthPass = null;
+        }
+
+        private void DisposeHairDepthPass()
+        {
+            m_HairDepthPass?.Dispose();
+            m_HairDepthPass = null;
         }
 
         private void DisposePostProcessingPass()

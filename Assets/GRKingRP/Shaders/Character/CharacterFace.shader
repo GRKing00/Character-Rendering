@@ -18,6 +18,11 @@ Shader "GRKingRP/Character/Face"
         [Sub(FaceLighting)] _EyeShadowColor("Eye Shadow Color", Color) = (1,1,1,1)
         [Sub(FaceLighting)] _EyeAlwaysLit("Eye Always Lit", Range(0,1)) = 0.2
 
+        [Main(FrontHairShadow, _, on, off)] _FrontHairShadow("Front Hair Shadow", Float) = 0
+        [SubToggle(FrontHairShadow)] _ReceiveFrontHairShadow("Enabled", Float) = 1
+        [Sub(FrontHairShadow)] _HairShadowDistance("Distance", Range(0,1)) = 0.2
+        [Sub(FrontHairShadow)] _HairShadowModelScale("Model Scale", Float) = 1
+
         [Main(HeadDirections, _, on, off)] _HeadDirections("Head Directions", Float) = 0
         [Sub(HeadDirections)] _HeadForwardOS("Forward (Object Space)", Vector) = (0,1,0,0)
         [Sub(HeadDirections)] _HeadRightOS("Right (Object Space)", Vector) = (0,0,-1,0)

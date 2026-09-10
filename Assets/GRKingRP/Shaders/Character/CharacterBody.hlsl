@@ -6,6 +6,7 @@ TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
 TEXTURE2D(_LightMap); SAMPLER(sampler_LightMap);
 TEXTURE2D(_RampCool); SAMPLER(sampler_RampCool);
 TEXTURE2D(_RampWarm); SAMPLER(sampler_RampWarm);
+TEXTURE2D(_StockingsMap); SAMPLER(sampler_StockingsMap);
 
 // 所有 Pass 保持同一份 UnityPerMaterial 布局。
 CBUFFER_START(UnityPerMaterial)
@@ -16,6 +17,25 @@ CBUFFER_START(UnityPerMaterial)
     float _BackfaceUV2;
     float _UseVertexAO;
     float _RampWarmWeight;
+    float _RimEnabled;
+    float _RimIntensity;
+    float _RimWidth;
+    float _RimSoftness;
+    float _RimDark;
+    half4 _RimColor;
+    float _EmissionEnabled;
+    float _EmissionThreshold;
+    float _EmissionIntensity;
+    half4 _EmissionColor;
+    float _StockingsEnabled;
+    float4 _StockingsMap_ST;
+    half4 _StockingsColor;
+    half4 _StockingsDarkColor;
+    float _StockingsDarkWidth;
+    float _StockingsPower;
+    float _StockingsLightWidth;
+    float _StockingsLightIntensity;
+    float _StockingsRoughness;
     float _OutlineEnabled;
     float _OutlineWidth;
     float _OutlineDepthOffset;
@@ -67,6 +87,7 @@ CBUFFER_END
 #include "Shared/CharacterCommon.hlsl"
 #include "Shared/CharacterMaterialID.hlsl"
 #include "Shared/CharacterLighting.hlsl"
+#include "Shared/CharacterBodyEffects.hlsl"
 #include "Shared/CharacterOutline.hlsl"
 #include "Shared/CharacterDepthOnly.hlsl"
 #include "Shared/CharacterDepthNormals.hlsl"
@@ -97,6 +118,8 @@ half4 CharacterBodyFragment(CharacterVaryings input,
     CharacterMaterialData material = GetCharacterMaterial(GetCharacterMaterialID(lightMap.a));
     float3 normalWS = normalize(input.normalWS) * (frontFace ? 1.0 : -1.0);
     float3 viewWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
+    float noV = saturate(dot(normalWS, viewWS));
+    baseColor.rgb = ApplyCharacterStockings(baseColor.rgb, uv, noV);
 #if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
     float4 shadowCoord = ComputeScreenPos(TransformWorldToHClip(input.positionWS));
 #else
@@ -104,10 +127,14 @@ half4 CharacterBodyFragment(CharacterVaryings input,
 #endif
     Light light = GetMainLight(shadowCoord);
     float3 halfWS = SafeNormalize(light.direction + viewWS);
+    float noL = dot(normalWS, light.direction);
     half3 color = GetCharacterDiffuse(baseColor.rgb, lightMap, input.color.r,
-        dot(normalWS, light.direction), light);
+        noL, light);
     color += GetCharacterSpecular(baseColor.rgb, lightMap, material,
         dot(normalWS, halfWS), light);
+    color += GetCharacterRimLight(input.positionCS, normalWS, viewWS,
+        noL, lightMap, light, _ModelScale);
+    color += GetCharacterEmission(baseColor.rgb, baseColor.a);
     return half4(MixFog(color, input.fogFactor), baseColor.a);
 }
 #endif

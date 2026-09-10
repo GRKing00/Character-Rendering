@@ -16,6 +16,9 @@ CBUFFER_START(UnityPerMaterial)
     half4 _FaceShadowColor;
     half4 _EyeShadowColor;
     float _EyeAlwaysLit;
+    float _ReceiveFrontHairShadow;
+    float _HairShadowDistance;
+    float _HairShadowModelScale;
     float4 _HeadForwardOS;
     float4 _HeadRightOS;
     float4 _HeadUpOS;
@@ -29,6 +32,7 @@ CBUFFER_START(UnityPerMaterial)
 CBUFFER_END
 
 #include "Shared/CharacterCommon.hlsl"
+#include "Shared/CharacterHairDepthShadow.hlsl"
 #include "Shared/CharacterFaceLighting.hlsl"
 #include "Shared/CharacterOutline.hlsl"
 #include "Shared/CharacterDepthOnly.hlsl"
@@ -50,6 +54,15 @@ half4 CharacterFaceFragment(CharacterVaryings input) : SV_Target
     float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
 #endif
     Light light = GetMainLight(shadowCoord);
+    if (_GRKingHairShadowEnabled > 0.5 && _ReceiveFrontHairShadow > 0.5)
+    {
+        float hairShadow = GetCharacterFrontHairShadow(
+            input.positionCS,
+            light.direction,
+            _HairShadowDistance,
+            _HairShadowModelScale);
+        light.shadowAttenuation = min(light.shadowAttenuation, hairShadow);
+    }
     half3 color = GetCharacterFaceDiffuse(baseColor.rgb, faceMap, faceUV,
         light, GetCharacterHeadDirections());
     return half4(MixFog(color, input.fogFactor), baseColor.a);
