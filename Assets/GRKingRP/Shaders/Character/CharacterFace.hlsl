@@ -64,4 +64,13 @@ half4 CharacterFaceOutlineFragment(CharacterVaryings input) : SV_Target
     return half4(MixFog(_OutlineColor.rgb, input.fogFactor), 1.0h);
 }
 
+half4 CharacterFaceEyeStencilFragment(CharacterVaryings input) : SV_Target
+{
+    UNITY_SETUP_INSTANCE_ID(input);
+    CharacterClip(CharacterBaseColor(input.uv.xy, true).a);
+    float2 faceUV = _FaceMapUseUV2 > 0.5 ? input.uv.zw : input.uv.xy;
+    clip(SAMPLE_TEXTURE2D(_FaceMap, sampler_FaceMap, faceUV).g - 0.5h);
+    return 0.0h;
+}
+
 #endif

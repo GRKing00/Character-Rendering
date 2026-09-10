@@ -1,27 +1,32 @@
-Shader "GRKingRP/Character/Face"
+Shader "GRKingRP/Character/Hair"
 {
     Properties
     {
         [Main(Surface, _, on, off)] _Surface("Surface", Float) = 0
         [Tex(Surface, _BaseColor)] _BaseMap("Base Map", 2D) = "white" {}
         [HideInInspector] _BaseColor("Base Color", Color) = (1,1,1,1)
-        [HideInInspector] _BackColor("Back Color", Color) = (1,1,1,1)
-        [HideInInspector] _BackfaceUV2("Back Face Uses UV2", Float) = 0
-        [SubEnum(Surface, UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2
+        [Sub(Surface)] _BackColor("Back Color", Color) = (1,1,1,1)
+        [SubEnum(Surface, UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 0
+        [SubToggle(Surface)] _BackfaceUV2("Back Face Uses UV2", Float) = 0
         [SubToggle(Surface, _ALPHATEST_ON)] _AlphaClip("Alpha Clip", Float) = 0
         [Sub(Surface_ALPHATEST_ON)] _Cutoff("Alpha Cutoff", Range(0,1)) = 0.5
 
-        [Main(FaceLighting, _, on, off)] _FaceLighting("Face Lighting", Float) = 0
-        [Sub(FaceLighting)] [NoScaleOffset] _FaceMap("Face Map (R Eye Lighting, G Eye Stencil, A SDF)", 2D) = "white" {}
-        [SubToggle(FaceLighting)] _FaceMapUseUV2("Face Map Uses UV2", Float) = 0
-        [Sub(FaceLighting)] _FaceShadowColor("Face Shadow Color", Color) = (0.5,0.5,0.5,1)
-        [Sub(FaceLighting)] _EyeShadowColor("Eye Shadow Color", Color) = (1,1,1,1)
-        [Sub(FaceLighting)] _EyeAlwaysLit("Eye Always Lit", Range(0,1)) = 0.2
+        [Main(Lighting, _, on, off)] _Lighting("Lighting", Float) = 0
+        [Sub(Lighting)] [NoScaleOffset] _LightMap("Light Map (R Specular, G AO, B Threshold)", 2D) = "white" {}
+        [Sub(Lighting)] [NoScaleOffset] _RampCool("Cool Ramp", 2D) = "white" {}
+        [Sub(Lighting)] [NoScaleOffset] _RampWarm("Warm Ramp", 2D) = "white" {}
+        [Sub(Lighting)] _RampWarmWeight("Warm Weight", Range(0,1)) = 0
+        [SubToggle(Lighting)] _UseVertexAO("Use Vertex R AO", Float) = 1
 
-        [Main(HeadDirections, _, on, off)] _HeadDirections("Head Directions", Float) = 0
-        [Sub(HeadDirections)] _HeadForwardOS("Forward (Object Space)", Vector) = (0,1,0,0)
-        [Sub(HeadDirections)] _HeadRightOS("Right (Object Space)", Vector) = (0,0,-1,0)
-        [Sub(HeadDirections)] _HeadUpOS("Up (Object Space)", Vector) = (-1,0,0,0)
+        [Main(Specular, _, on, off)] _Specular("Specular", Float) = 0
+        [Sub(Specular)] [HDR] _SpecularColor("Color", Color) = (1,1,1,1)
+        [Sub(Specular)] _SpecularShininess("Shininess", Range(1,256)) = 10
+        [Sub(Specular)] _SpecularIntensity("Intensity", Range(0,10)) = 1
+        [Sub(Specular)] _SpecularSoftness("Softness", Range(0.001,1)) = 0.02
+
+        [Main(FrontHair, _, on, off)] _FrontHair("Front Hair", Float) = 0
+        [SubToggle(FrontHair)] _FrontHairTransparent("Transparent Over Eyes", Float) = 1
+        [Sub(FrontHair)] _HairBlendAlpha("Blend Alpha", Range(0,1)) = 0.6
 
         [Main(Outline, _, on, off)] _Outline("Outline", Float) = 0
         [SubToggle(Outline)] _OutlineEnabled("Enabled", Float) = 1
@@ -35,24 +40,32 @@ Shader "GRKingRP/Character/Face"
 
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry+20" }
         HLSLINCLUDE
-        #include "CharacterFace.hlsl"
+        #include "CharacterHair.hlsl"
         ENDHLSL
 
         Pass
         {
-            Name "Character Face"
-            Tags { "LightMode"="GRKingCharacterBody" }
+            Name "Character Hair Opaque"
+            Tags { "LightMode"="GRKingCharacterHairOpaque" }
             Cull [_Cull]
             ZWrite On
             ZTest LEqual
             Blend Off
-            Stencil { Ref 1 WriteMask 1 Comp Always Pass Replace Fail Keep ZFail Keep }
+            Stencil
+            {
+                Ref 3
+                ReadMask 2
+                WriteMask 1
+                Comp NotEqual
+                Pass Replace
+                Fail Keep
+            }
             HLSLPROGRAM
             #pragma target 3.5
             #pragma vertex CharacterVertex
-            #pragma fragment CharacterFaceFragment
+            #pragma fragment CharacterHairOpaqueFragment
             #pragma shader_feature_local_fragment _ _ALPHATEST_ON
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
@@ -63,33 +76,35 @@ Shader "GRKingRP/Character/Face"
 
         Pass
         {
-            Name "Character Face Eye Stencil"
-            Tags { "LightMode"="GRKingCharacterEyeStencil" }
+            Name "Character Hair Transparent"
+            Tags { "LightMode"="GRKingCharacterHairTransparent" }
             Cull Back
-            ZWrite Off
+            ZWrite On
             ZTest LEqual
-            ColorMask 0
+            Blend SrcAlpha OneMinusSrcAlpha
             Stencil
             {
                 Ref 3
-                WriteMask 2
-                Comp Always
-                Pass Replace
+                ReadMask 2
+                Comp Equal
+                Pass Keep
                 Fail Keep
-                ZFail Keep
             }
             HLSLPROGRAM
             #pragma target 3.5
             #pragma vertex CharacterVertex
-            #pragma fragment CharacterFaceEyeStencilFragment
+            #pragma fragment CharacterHairTransparentFragment
             #pragma shader_feature_local_fragment _ _ALPHATEST_ON
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fog
             #pragma multi_compile_instancing
             ENDHLSL
         }
 
         Pass
         {
-            Name "Character Face Outline"
+            Name "Character Hair Outline"
             Tags { "LightMode"="GRKingCharacterOutline" }
             Cull Front
             ZWrite On
@@ -99,9 +114,26 @@ Shader "GRKingRP/Character/Face"
             HLSLPROGRAM
             #pragma target 3.5
             #pragma vertex CharacterOutlineVertex
-            #pragma fragment CharacterFaceOutlineFragment
+            #pragma fragment CharacterHairOutlineFragment
             #pragma shader_feature_local_fragment _ _ALPHATEST_ON
             #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "Character Hair Depth"
+            Tags { "LightMode"="GRKingCharacterHairDepth" }
+            Cull [_Cull]
+            ZWrite On
+            ZTest LEqual
+            ColorMask 0
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex CharacterVertex
+            #pragma fragment CharacterDepthFragment
+            #pragma shader_feature_local_fragment _ _ALPHATEST_ON
             #pragma multi_compile_instancing
             ENDHLSL
         }

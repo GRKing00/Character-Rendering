@@ -13,10 +13,14 @@ namespace GRKingRP.RendererFeatures
         [Header("Character Rendering")]
         public bool EnableCharacterRendering = true;
         public bool EnableCharacterOutline = true;
+        public bool EnableCharacterHair = true;
         [Tooltip("选择参与自定义角色绘制的 GameObject Layer。")]
         public LayerMask CharacterLayerMask = -1;
 
         private GRKingCharacterDrawPass m_CharacterBodyPass;
+        private GRKingCharacterDrawPass m_CharacterEyeStencilPass;
+        private GRKingCharacterDrawPass m_CharacterHairOpaquePass;
+        private GRKingCharacterDrawPass m_CharacterHairTransparentPass;
         private GRKingCharacterDrawPass m_CharacterOutlinePass;
 
         [Header("Post Processing")]
@@ -43,6 +47,12 @@ namespace GRKingRP.RendererFeatures
             DisposePostProcessingPass();
             m_CharacterBodyPass = new GRKingCharacterDrawPass(
                 "GRKingRP Character Body", "GRKingCharacterBody", CharacterLayerMask);
+            m_CharacterEyeStencilPass = new GRKingCharacterDrawPass(
+                "GRKingRP Character Eye Stencil", "GRKingCharacterEyeStencil", CharacterLayerMask);
+            m_CharacterHairOpaquePass = new GRKingCharacterDrawPass(
+                "GRKingRP Character Hair Opaque", "GRKingCharacterHairOpaque", CharacterLayerMask);
+            m_CharacterHairTransparentPass = new GRKingCharacterDrawPass(
+                "GRKingRP Character Hair Transparent", "GRKingCharacterHairTransparent", CharacterLayerMask);
             m_CharacterOutlinePass = new GRKingCharacterDrawPass(
                 "GRKingRP Character Outline", "GRKingCharacterOutline", CharacterLayerMask);
 
@@ -77,6 +87,12 @@ namespace GRKingRP.RendererFeatures
             if (EnableCharacterRendering)
             {
                 renderer.EnqueuePass(m_CharacterBodyPass);
+                if (EnableCharacterHair)
+                {
+                    renderer.EnqueuePass(m_CharacterEyeStencilPass);
+                    renderer.EnqueuePass(m_CharacterHairOpaquePass);
+                    renderer.EnqueuePass(m_CharacterHairTransparentPass);
+                }
                 if (EnableCharacterOutline)
                     renderer.EnqueuePass(m_CharacterOutlinePass);
             }
