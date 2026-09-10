@@ -38,17 +38,4 @@ CharacterVaryings CharacterOutlineVertex(CharacterAttributes input)
     return output;
 }
 
-half4 CharacterOutlineFragment(CharacterVaryings input) : SV_Target
-{
-    UNITY_SETUP_INSTANCE_ID(input);
-    clip(_OutlineEnabled - 0.5);
-    clip(_OutlineWidth - 0.00001);
-    // Cull Front 绘制外扩背面，但描边颜色/裁剪仍匹配外表面的 UV。
-    half4 baseColor = CharacterBaseColor(input.uv.xy, true);
-    CharacterClip(baseColor.a);
-    half4 lightMap = SAMPLE_TEXTURE2D(_LightMap, sampler_LightMap, input.uv.xy);
-    //选择描边颜色
-    CharacterMaterialData material = GetCharacterMaterial(GetCharacterMaterialID(lightMap.a));
-    return half4(MixFog(material.outlineColor, input.fogFactor), 1);
-}
 #endif

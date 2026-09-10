@@ -121,7 +121,7 @@ Shader "GRKingRP/Character/Body"
             HLSLPROGRAM
             #pragma target 3.5
             #pragma vertex CharacterOutlineVertex
-            #pragma fragment CharacterOutlineFragment
+            #pragma fragment CharacterBodyOutlineFragment
             #pragma shader_feature_local_fragment _ _ALPHATEST_ON
             #pragma multi_compile_fog
             #pragma multi_compile_instancing

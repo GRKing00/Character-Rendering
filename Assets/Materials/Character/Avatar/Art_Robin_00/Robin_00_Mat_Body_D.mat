@@ -8,11 +8,16 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Robin_00_Mat_Body_D
-  m_Shader: {fileID: 4800000, guid: 4e606244135f2024c968d1257cf8b9a7, type: 3}
+  m_Shader: {fileID: 4800000, guid: 8394bfd03cd5db342a94e5d05bb66101, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _BACKFACEUV2_ON
+  - _OUTLINEENABLED_ON
+  - _OUTLINEUSETANGENT_ON
+  - _OUTLINEUSEVERTEXALPHA_ON
+  - _USEVERTEXAO_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -47,6 +52,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LightMap:
+        m_Texture: {fileID: 2800000, guid: d626ac9e3f13c04489bc01f2f5a85493, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 0085204b34fe2fa4882eaee22928f807, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -61,6 +70,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RampCool:
+        m_Texture: {fileID: 2800000, guid: ba95df35101fc384d86a402c8e1d65fc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RampWarm:
+        m_Texture: {fileID: 2800000, guid: 7ec05f742f8df5a48bee1ae6dc24be16, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -83,12 +100,13 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _BackfaceUV2: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _Cull: 2
+    - _Cull: 0
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -98,24 +116,83 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _Lighting: 0
+    - _Material0: 0
+    - _Material1: 0
+    - _Material2: 0
+    - _Material3: 0
+    - _Material4: 0
+    - _Material5: 0
+    - _Material6: 0
+    - _Material7: 0
     - _Metallic: 0
+    - _ModelScale: 1
     - _OcclusionStrength: 1
+    - _Outline: 0
+    - _OutlineDepthOffset: 0
+    - _OutlineEnabled: 1
+    - _OutlineUseTangent: 1
+    - _OutlineUseVertexAlpha: 1
+    - _OutlineWidth: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
+    - _RampWarmWeight: 0.2
     - _ReceiveShadows: 1
+    - _Shininess0: 32
+    - _Shininess1: 32
+    - _Shininess2: 32
+    - _Shininess3: 32
+    - _Shininess4: 32
+    - _Shininess5: 32
+    - _Shininess6: 32
+    - _Shininess7: 32
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _SpecularIntensity0: 1
+    - _SpecularIntensity1: 1
+    - _SpecularIntensity2: 1
+    - _SpecularIntensity3: 1
+    - _SpecularIntensity4: 1
+    - _SpecularIntensity5: 1
+    - _SpecularIntensity6: 1
+    - _SpecularIntensity7: 1
+    - _SpecularSoftness0: 0.05
+    - _SpecularSoftness1: 0.05
+    - _SpecularSoftness2: 0.05
+    - _SpecularSoftness3: 0.05
+    - _SpecularSoftness4: 0.05
+    - _SpecularSoftness5: 0.05
+    - _SpecularSoftness6: 0.05
+    - _SpecularSoftness7: 0.05
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _UseVertexAO: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
+    - _BackColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor0: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _OutlineColor1: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _OutlineColor2: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _OutlineColor3: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _OutlineColor4: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _OutlineColor5: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _OutlineColor6: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
+    - _OutlineColor7: {r: 0.09999997, g: 0.049999982, b: 0.049999982, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecularColor0: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor3: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor4: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor5: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor6: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor7: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &3355773841705441684
 MonoBehaviour:
