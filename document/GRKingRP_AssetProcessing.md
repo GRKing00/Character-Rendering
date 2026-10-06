@@ -2,6 +2,8 @@
 
 当前方案位于 `Assets/GRKingRP/Editor/AssetProcessors`，只在 Unity Editor 中运行。它通过两个 ScriptableObject 资产保存规则，不需要每次新增规则都修改 C#。
 
+纹理导入负责应用 Preset；模型导入负责应用 Preset 和可选的平滑法线烘焙。材质和 Prefab 由用户手动管理，不再自动生成。
+
 ## 1. 配置入口
 
 | 配置 | 固定路径 | 当前根目录 |
@@ -49,9 +51,6 @@ NameGlob: Art_* | Avatar_*
 Preset: AvatarModel
 AutoBakeSmoothedNormals: true
 SmoothedNormalStorage: Tangent
-AutoCreatePrefab: true
-AutoCreateMaterials: true
-MaterialTemplate: None
 ```
 
 `VerboseLogging` 只控制平滑法线处理的详细日志。
@@ -80,7 +79,9 @@ Importer 会登记对 Settings 资产和匹配 Preset 的 Artifact 依赖。修�
 
 ### OnPreprocessModel
 
-模型数据生成前，将匹配规则的 Preset 应用到 ModelImporter。应用前会保存现有 External Object Map，应用后再恢复，避免 Preset 清掉已经建立的外部材质映射。
+模型数据生成前，将匹配规则的 Preset 应用到 ModelImporter。当前 `AvatarModel.preset` 已排除 `m_ExternalObjects`，所以应用 Preset 不会覆盖 `Extract Materials` 建立的外部材质映射；代码不再保存或恢复映射。
+
+新增或更换模型 Preset 时，也需排除 `m_ExternalObjects`。当前处理器不查找或创建外部材质，也不建立新的槽位映射；材质导入方式由 ModelImporter / Preset 的设置决定。
 
 模型同样登记对 Settings 和 Preset Artifact 的依赖。
 
@@ -112,41 +113,7 @@ Importer 会登记对 Settings 资产和匹配 Preset 的 Artifact 依赖。修�
 
 VertexColor 会保留已有 Alpha，但覆盖 RGB；UV 模式会覆盖对应 UV 通道。Tangent 模式会覆盖原始 tangent.xyz，只保留 tangent.w，因此不适合还需要原始切线进行普通法线贴图计算的材质。
 
-## 6. 自动材质和 Prefab 输出
-
-[ModelImportOutputPostprocessor.cs](<D:/TA/UnityProject/my/Character Rendering/Assets/GRKingRP/Editor/AssetProcessors/ModelImportOutputPostprocessor.cs>) 在 `OnPostprocessAllAssets()` 中收集刚导入或移动的模型，再通过 `EditorApplication.delayCall` 推迟到 AssetDatabase 较稳定的时机处理输出。
-
-### 路径映射
-
-输入模型在 Model 根目录下的相对目录会映射到输出根目录。
-
-例如：
-
-```text
-模型：Assets/Models/Character/Avatar/Art_Robin_00.fbx
-Prefab：Assets/Prefabs/Character/Avatar/Art_Robin_00.prefab
-材质：Assets/Materials/Character/Avatar/Art_Robin_00/<材质槽名>.mat
-```
-
-Prefab 根节点使用模型名，导入模型实例作为其子节点。
-
-### 自动材质
-
-自动材质要求 ModelImporter 的 `Material Creation Mode = None`。代码通过 Unity 2022.3 的非公开接口读取 FBX 源材质槽，并开启 None 模式下的材质重映射；升级 Unity 后需要重点回归测试 [ModelImporterCompatibility.cs](<D:/TA/UnityProject/my/Character Rendering/Assets/GRKingRP/Editor/AssetProcessors/ModelImporterCompatibility.cs>)。
-
-- 目标 `.mat` 不存在时，优先复制 `MaterialTemplate` 创建。
-- 未设置模板时使用 `URP/Lit`，找不到时回退到 Standard。
-- 已存在同名材质时直接复用，不覆盖已有材质参数。
-- 创建后通过 `SourceAssetIdentifier → Material` 建立 External Object Map。
-- 默认材质不会根据纹理命名自动填写 Base Map。
-
-首次创建映射或修改兼容设置后会保存 Importer 并强制重新导入一次模型。再次处理时映射已经一致，不会无限循环。
-
-### 自动 Prefab
-
-Prefab 只在目标文件不存在时创建，已有 Prefab 不会被覆盖，避免丢失手动修改。若想重新自动生成，需要先自行处理现有 Prefab，再重新导入模型。
-
-## 7. Settings、Preset 与重新导入
+## 6. Settings、Preset 与重新导入
 
 [AssetProcessorGlobalSettings.cs](<D:/TA/UnityProject/my/Character Rendering/Assets/GRKingRP/Editor/AssetProcessors/AssetProcessorGlobalSettings.cs>) 在程序集加载后延迟检查两份 Settings 资产。它们路径固定、不会自动创建；缺失时 Console 会报错。
 
@@ -154,17 +121,16 @@ Prefab 只在目标文件不存在时创建，已有 Prefab 不会被覆盖，�
 
 修改 AssetPostprocessor 逻辑时，可以增加 `GetVersion()` 返回值，帮助 Unity 识别处理器版本变化；当前纹理和模型处理器版本均为 `7`。
 
-## 8. 常见问题
+模型导入完成后没有额外的输出处理队列，也不会因为自动创建材质映射而主动触发第二次导入。已有材质、Prefab 及模型的材质映射会保留。
+
+## 7. 常见问题
 
 | 问题 | 检查项 |
 | --- | --- |
 | 资产没有使用 Preset | 是否位于正确根目录；文件名是否匹配；规则是否 Enabled；Preset 类型是否正确 |
 | 新规则不生效 | 第一条命中规则是否提前截断；修改是否已提交；重新导入目标资产 |
 | 修改 Preset 后设置没更新 | Preset 是否为规则的直接引用；检查导入日志和 Artifact 依赖；重新导入验证 |
-| 没有生成材质 | AutoCreateMaterials 是否开启；Material Creation Mode 是否为 None；模型是否存在源材质槽 |
-| 材质没有自动关联纹理 | 当前只创建默认材质和槽位映射，没有实现按纹理名赋值 |
-| 没有生成 Prefab | AutoCreatePrefab 是否开启；目标 Prefab 是否已经存在 |
-| 模型首次导入两次 | 新建材质映射后需要重新导入模型，这是预期行为 |
+| 模型材质未绑定 | 手动配置模型材质映射或 Prefab Renderer 的材质槽；None 模式不会由当前处理器自动生成材质 |
 | 法线贴图效果异常 | 是否将平滑法线写入 Tangent，导致原 tangent.xyz 被覆盖 |
 
 修改规则前建议确认影响范围。扩大根目录或使用过宽的 `*` 会让更多资产依赖同一设置，并可能触发批量重新导入。

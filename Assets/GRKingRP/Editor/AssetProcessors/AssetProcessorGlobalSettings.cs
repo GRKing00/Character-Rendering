@@ -18,7 +18,7 @@ namespace GRKingRP.Editor.AssetProcessors
                 TextureSettingsAssetPath);
         }
 
-        //加载资产设置
+        //加载模型设置
         internal static ModelImportSettings LoadModelSettings()
         {
             return AssetDatabase.LoadAssetAtPath<ModelImportSettings>(

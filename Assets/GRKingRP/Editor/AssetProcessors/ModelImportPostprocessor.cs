@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Presets;
@@ -75,7 +74,7 @@ namespace GRKingRP.Editor.AssetProcessors
 
             string modelName = Path.GetFileNameWithoutExtension(normalizedAssetPath);
 
-            //遍历规则，如果有适配的规则，则使用对应的预设
+            //遍历规则，找适配的规则
             foreach (ModelImportRule rule in settings.Rules)
             {
                 if (rule != null && rule.TryMatch(modelName))
@@ -129,32 +128,12 @@ namespace GRKingRP.Editor.AssetProcessors
                 return;
             }
 
-            //存储外部材质映射
-            Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap =
-                modelImporter.GetExternalObjectMap();
-
+            // 模型 Preset 应排除 m_ExternalObjects，以保留 Extract Materials 建立的映射。
             if (preset.ApplyTo(modelImporter))
             {
-                RestoreExternalObjectMap(modelImporter, externalObjectMap);
-
                 // Presets are native assets, so their imported artifact is the
                 // dependency that must invalidate this model.
                 context.DependsOnArtifact(presetPath);
-            }
-        }
-
-        //恢复外部材质映射
-        private static void RestoreExternalObjectMap(
-            ModelImporter modelImporter,
-            Dictionary<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> externalObjectMap)
-        {
-            foreach (KeyValuePair<AssetImporter.SourceAssetIdentifier, UnityEngine.Object> remap
-                     in externalObjectMap)
-            {
-                if (remap.Value != null)
-                {
-                    modelImporter.AddRemap(remap.Key, remap.Value);
-                }
             }
         }
 

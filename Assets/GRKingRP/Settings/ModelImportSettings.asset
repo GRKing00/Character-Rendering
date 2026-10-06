@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: ModelImportSettings
   m_EditorClassIdentifier: 
   ModelImportRootFolder: Assets/Models/
-  PrefabOutputRootFolder: Assets/Prefabs/
-  MaterialOutputRootFolder: Assets/Materials/
   VerboseLogging: 0
   Rules:
   - Enabled: 1
@@ -24,6 +22,3 @@ MonoBehaviour:
       type: 2}
     AutoBakeSmoothedNormals: 1
     SmoothedNormalStorage: 0
-    AutoCreatePrefab: 1
-    AutoCreateMaterials: 1
-    MaterialTemplate: {fileID: 0}

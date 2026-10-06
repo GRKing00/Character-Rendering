@@ -27,9 +27,6 @@ namespace GRKingRP.Editor.AssetProcessors
         public bool AutoBakeSmoothedNormals;
         public SmoothedNormalStorageTarget SmoothedNormalStorage =
             SmoothedNormalStorageTarget.Tangent;
-        public bool AutoCreatePrefab;
-        public bool AutoCreateMaterials;
-        public Material MaterialTemplate;
 
         public bool TryMatch(string modelName)
         {

@@ -1,5 +1,4 @@
 using System;
-using UnityEditor;
 
 namespace GRKingRP.Editor.AssetProcessors
 {
@@ -58,49 +57,6 @@ namespace GRKingRP.Editor.AssetProcessors
                        StringComparison.OrdinalIgnoreCase);
         }
 
-        //获取文件夹
-        internal static bool EnsureAssetFolder(string folderPath)
-        {
-            string normalizedFolder = NormalizeFolder(folderPath)?.TrimEnd('/');
-            if (normalizedFolder == null)
-            {
-                return false;
-            }
-
-            string[] folderParts = normalizedFolder.Split('/');
-            if (folderParts.Length == 0 ||
-                !folderParts[0].Equals("Assets", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            string currentFolder = folderParts[0];
-
-            for (int index = 1; index < folderParts.Length; index++)
-            {
-                if (folderParts[index].Length == 0)
-                {
-                    return false;
-                }
-
-                string nextFolder = currentFolder + "/" + folderParts[index];
-                if (!AssetDatabase.IsValidFolder(nextFolder))
-                {
-                    string folderGuid = AssetDatabase.CreateFolder(
-                        currentFolder,
-                        folderParts[index]);
-                    if (string.IsNullOrEmpty(folderGuid))
-                    {
-                        return false;
-                    }
-                }
-
-                currentFolder = nextFolder;
-            }
-
-            return true;
-        }
-
         //名字是否匹配当前规则
         private static bool IsSingleGlobMatch(
             string value,
@@ -114,6 +70,7 @@ namespace GRKingRP.Editor.AssetProcessors
 
             while (valueIndex < value.Length)
             {
+                //普通字符相同，或者规则字符是 ?
                 if (patternIndex < pattern.Length &&
                     (pattern[patternIndex] == '?' ||
                      CharactersEqual(
@@ -126,6 +83,8 @@ namespace GRKingRP.Editor.AssetProcessors
                     continue;
                 }
 
+                //遇到 *
+                //先让 * 匹配最少字符，后面失败时，再逐步扩大它的匹配范围
                 if (patternIndex < pattern.Length && pattern[patternIndex] == '*')
                 {
                     lastStarIndex = patternIndex++;
@@ -133,11 +92,14 @@ namespace GRKingRP.Editor.AssetProcessors
                     continue;
                 }
 
+                //后续匹配失败
+                //没遇到过 *，直接返回 false
                 if (lastStarIndex < 0)
                 {
                     return false;
                 }
 
+                //让最近的 * 再多匹配一个字符
                 patternIndex = lastStarIndex + 1;
                 valueIndex = ++valueIndexAfterStar;
             }

@@ -55,7 +55,7 @@ ModelImporter:
       name: Sparkle_Mat_Hair
     second: {fileID: 2100000, guid: 8e7e246fdc7ada7458618dd6c937e2ca, type: 2}
   materials:
-    materialImportMode: 0
+    materialImportMode: 2
     materialName: 0
     materialSearch: 1
     materialLocation: 1

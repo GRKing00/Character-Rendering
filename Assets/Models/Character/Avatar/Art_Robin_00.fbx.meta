@@ -45,7 +45,7 @@ ModelImporter:
       name: Robin_00_Mat_Weapon
     second: {fileID: 2100000, guid: a48e1b3018dd0464fa7f219c3f3e5142, type: 2}
   materials:
-    materialImportMode: 0
+    materialImportMode: 2
     materialName: 0
     materialSearch: 1
     materialLocation: 1

@@ -18,7 +18,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_MaterialImportMode
-    value: 0
+    value: 2
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_MaterialName
@@ -404,7 +404,6 @@ Preset:
   - m_ExternalObjects
   - m_MaterialName
   - m_MaterialSearch
-  - m_MaterialLocation
   - m_LegacyGenerateAnimations
   - m_BakeSimulation
   - m_ResampleCurves
