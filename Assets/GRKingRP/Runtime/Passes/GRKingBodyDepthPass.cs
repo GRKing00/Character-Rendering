@@ -48,6 +48,8 @@ namespace GRKingRP.Passes
 
             RenderTextureDescriptor descriptor = renderingData.cameraData.cameraTargetDescriptor;
             descriptor.msaaSamples = 1;
+            descriptor.width = Mathf.Max(1, descriptor.width / 2);
+            descriptor.height = Mathf.Max(1, descriptor.height / 2);
             descriptor.graphicsFormat = GraphicsFormat.None;
             descriptor.depthStencilFormat = GraphicsFormatUtility.GetDepthStencilFormat(16, 0);
 

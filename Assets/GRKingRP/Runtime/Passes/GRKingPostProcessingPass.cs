@@ -103,7 +103,7 @@ namespace GRKingRP.Passes
         }
 
         /// <summary>
-        /// 每台相机入队前调用。此处不访问尚未分配的 cameraColorTargetHandle。
+        /// 每台相机入队前调用。
         /// </summary>
         public bool Setup(ref RenderingData renderingData)
         {

@@ -13,11 +13,8 @@ namespace GRKingRP.RendererFeatures
         [Header("Character Rendering")]
         public bool EnableCharacterRendering = true;
         public bool EnableCharacterOutline = true;
-        public bool EnableCharacterHair = true;
         public bool EnableScreenSpaceRim = true;
         public bool EnableFrontHairShadow = true;
-        public GRKingHairDepthPass.DownsampleMode FrontHairShadowDownsample =
-            GRKingHairDepthPass.DownsampleMode.Half;
         [Tooltip("选择参与自定义角色绘制的 GameObject Layer。")]
         public LayerMask CharacterLayerMask = -1;
 
@@ -25,6 +22,7 @@ namespace GRKingRP.RendererFeatures
         private GRKingHairDepthPass m_HairDepthPass;
         private GRKingCharacterDrawPass m_CharacterBodyPass;
         private GRKingCharacterDrawPass m_CharacterEyeStencilPass;
+        private GRKingCharacterDrawPass m_CharacterEyeShadowPass;
         private GRKingCharacterDrawPass m_CharacterHairOpaquePass;
         private GRKingCharacterDrawPass m_CharacterHairTransparentPass;
         private GRKingCharacterDrawPass m_CharacterOutlinePass;
@@ -59,6 +57,8 @@ namespace GRKingRP.RendererFeatures
                 "GRKingRP Character Body", "GRKingCharacterBody", CharacterLayerMask);
             m_CharacterEyeStencilPass = new GRKingCharacterDrawPass(
                 "GRKingRP Character Eye Stencil", "GRKingCharacterEyeStencil", CharacterLayerMask);
+            m_CharacterEyeShadowPass = new GRKingCharacterDrawPass(
+                "GRKingRP Character Eye Shadow", "GRKingCharacterEyeShadow", CharacterLayerMask);
             m_CharacterHairOpaquePass = new GRKingCharacterDrawPass(
                 "GRKingRP Character Hair Opaque", "GRKingCharacterHairOpaque", CharacterLayerMask);
             m_CharacterHairTransparentPass = new GRKingCharacterDrawPass(
@@ -98,22 +98,20 @@ namespace GRKingRP.RendererFeatures
             {
                 bool enableScreenSpaceRim = EnableScreenSpaceRim &&
                     !renderingData.cameraData.isPreviewCamera;
-                bool enableFrontHairShadow = EnableCharacterHair &&
-                    EnableFrontHairShadow &&
+                bool enableFrontHairShadow = EnableFrontHairShadow &&
                     !renderingData.cameraData.isPreviewCamera;
 
                 m_BodyDepthPass.Setup(enableScreenSpaceRim);
                 renderer.EnqueuePass(m_BodyDepthPass);
-                m_HairDepthPass.Setup(enableFrontHairShadow, FrontHairShadowDownsample);
+                m_HairDepthPass.Setup(enableFrontHairShadow);
                 renderer.EnqueuePass(m_HairDepthPass);
 
                 renderer.EnqueuePass(m_CharacterBodyPass);
-                if (EnableCharacterHair)
-                {
-                    renderer.EnqueuePass(m_CharacterEyeStencilPass);
-                    renderer.EnqueuePass(m_CharacterHairOpaquePass);
-                    renderer.EnqueuePass(m_CharacterHairTransparentPass);
-                }
+                // 眼影先于头发绘制，以免被头发深度遮挡。
+                renderer.EnqueuePass(m_CharacterEyeStencilPass);
+                renderer.EnqueuePass(m_CharacterEyeShadowPass);
+                renderer.EnqueuePass(m_CharacterHairOpaquePass);
+                renderer.EnqueuePass(m_CharacterHairTransparentPass);
                 if (EnableCharacterOutline)
                     renderer.EnqueuePass(m_CharacterOutlinePass);
             }

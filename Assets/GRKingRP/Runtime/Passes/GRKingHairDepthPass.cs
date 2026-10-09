@@ -13,13 +13,6 @@ namespace GRKingRP.Passes
     /// <summary>将角色头发写入独立深度纹理，供脸部生成刘海阴影。</summary>
     public sealed class GRKingHairDepthPass : ScriptableRenderPass, IDisposable
     {
-        public enum DownsampleMode
-        {
-            Full = 1,
-            Half = 2,
-            Quarter = 4
-        }
-
         private static readonly ShaderTagId s_HairDepthTag =
             new ShaderTagId("GRKingCharacterHairDepth");
         private static readonly int s_HairDepthTexture =
@@ -29,7 +22,6 @@ namespace GRKingRP.Passes
 
         private FilteringSettings m_Filtering;
         private RTHandle m_HairDepthTexture;
-        private DownsampleMode m_Downsample = DownsampleMode.Half;
         private bool m_Enabled;
 
         public GRKingHairDepthPass(LayerMask layerMask)
@@ -39,10 +31,9 @@ namespace GRKingRP.Passes
             m_Filtering = new FilteringSettings(RenderQueueRange.opaque, layerMask);
         }
 
-        public void Setup(bool enabled, DownsampleMode downsample)
+        public void Setup(bool enabled)
         {
             m_Enabled = enabled;
-            m_Downsample = downsample;
         }
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
@@ -56,9 +47,8 @@ namespace GRKingRP.Passes
             }
 
             RenderTextureDescriptor descriptor = renderingData.cameraData.cameraTargetDescriptor;
-            int divisor = (int)m_Downsample;
-            descriptor.width = Mathf.Max(1, descriptor.width / divisor);
-            descriptor.height = Mathf.Max(1, descriptor.height / divisor);
+            descriptor.width = Mathf.Max(1, descriptor.width / 2);
+            descriptor.height = Mathf.Max(1, descriptor.height / 2);
             descriptor.msaaSamples = 1;
             descriptor.graphicsFormat = GraphicsFormat.None;
             descriptor.depthStencilFormat = GraphicsFormatUtility.GetDepthStencilFormat(16, 0);

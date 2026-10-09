@@ -143,7 +143,7 @@ PrefabInstance:
     - target: {fileID: 1997924298964387762, guid: 00b6f91d83130734da00f47eacdcfedf,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.668
       objectReference: {fileID: 0}
     - target: {fileID: 1997924298964387762, guid: 00b6f91d83130734da00f47eacdcfedf,
         type: 3}
@@ -231,7 +231,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -471,7 +471,7 @@ PrefabInstance:
     - target: {fileID: 8687570333460195960, guid: 070b58633daafc1478a190ea2dd3511d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.867
       objectReference: {fileID: 0}
     - target: {fileID: 8687570333460195960, guid: 070b58633daafc1478a190ea2dd3511d,
         type: 3}
@@ -685,6 +685,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2528791546984011245, guid: 83eb6dac392670946b417a7fa255fc80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5256872571026747801, guid: 83eb6dac392670946b417a7fa255fc80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7337158731049095518, guid: 83eb6dac392670946b417a7fa255fc80,
         type: 3}
       propertyPath: m_LocalPosition.x

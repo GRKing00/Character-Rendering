@@ -82,9 +82,8 @@ MonoBehaviour:
   m_Active: 1
   EnableCharacterRendering: 1
   EnableCharacterOutline: 1
-  EnableCharacterHair: 1
+  EnableScreenSpaceRim: 1
   EnableFrontHairShadow: 1
-  FrontHairShadowDownsample: 2
   CharacterLayerMask:
     serializedVersion: 2
     m_Bits: 64

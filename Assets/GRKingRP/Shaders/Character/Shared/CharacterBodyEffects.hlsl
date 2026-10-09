@@ -5,6 +5,7 @@
 #define GRKING_CHARACTER_BODY_EFFECTS_INCLUDED
 
 TEXTURE2D(_GRKingBodyDepthTexture);
+SAMPLER(sampler_GRKingBodyDepthTexture);
 float _GRKingScreenSpaceRimEnabled;
 
 float CharacterBodyLinearEyeDepth(float depth)
@@ -65,16 +66,15 @@ half3 GetCharacterRimLight(float4 positionCS, float3 normalWS, float3 viewWS,
     rimWidth *= 10.0 * rsqrt(max(depth / modelScale, 0.0001));
 
     float horizontalDirection = -sign(cross(viewWS, normalWS).y);
-    float2 samplePosition = positionCS.xy - 0.5 +
-        float2(horizontalDirection * rimWidth, 0.0);
-    samplePosition = clamp(
-        samplePosition,
-        0.0,
-        max(_ScaledScreenParams.xy - 1.0, 0.0));
+    // 归一化 UV 适配不同分辨率的身体深度纹理。
+    float2 sampleUV = saturate(
+        (positionCS.xy + float2(horizontalDirection * rimWidth, 0.0))
+        / _ScaledScreenParams.xy);
 
-    float offsetDepth = LOAD_TEXTURE2D(
+    float offsetDepth = SAMPLE_TEXTURE2D(
         _GRKingBodyDepthTexture,
-        (uint2)samplePosition).r;
+        sampler_GRKingBodyDepthTexture,
+        sampleUV).r;
     offsetDepth = CharacterBodyLinearEyeDepth(offsetDepth);
 
     float depthEdge = smoothstep(
