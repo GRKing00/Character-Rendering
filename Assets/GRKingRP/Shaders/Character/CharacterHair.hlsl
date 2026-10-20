@@ -9,6 +9,9 @@ TEXTURE2D(_RampWarm); SAMPLER(sampler_RampWarm);
 
 // 所有 Pass 保持同一份 UnityPerMaterial 布局。
 CBUFFER_START(UnityPerMaterial)
+    float _GRKingShadowCasterId;
+    float _SelfShadowDepthBias;
+    float _SelfShadowNormalBias;
     float4 _BaseMap_ST;
     half4 _BaseColor;
     half4 _BackColor;
@@ -50,12 +53,9 @@ half3 GetCharacterHairColor(CharacterVaryings input, bool frontFace,
     float3 normalWS = normalize(input.normalWS) * (frontFace ? 1.0 : -1.0);
     float3 viewWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
 
-#if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
-    float4 shadowCoord = ComputeScreenPos(TransformWorldToHClip(input.positionWS));
-#else
-    float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
-#endif
-    Light light = GetMainLight(shadowCoord);
+    Light light = GetCharacterMainLight(input.positionWS);
+    light.shadowAttenuation = min(light.shadowAttenuation,
+        SampleGRKingSelfShadow(input.positionWS, _GRKingShadowCasterId));
     float noL = dot(normalWS, light.direction);
     half3 color = GetCharacterHairDiffuse(baseColor.rgb, lightMap, input.color.r,
         noL, light);

@@ -23,7 +23,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2006
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -123,6 +123,7 @@ Material:
     - _EmissionIntensity: 0
     - _EmissionThreshold: 1
     - _EnvironmentReflections: 1
+    - _GRKingShadowCasterId: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -154,6 +155,9 @@ Material:
     - _RimLight: 0
     - _RimSoftness: 0.05
     - _RimWidth: 0.3
+    - _SelfShadowCaster: 0
+    - _SelfShadowDepthBias: -0.01
+    - _SelfShadowNormalBias: 0
     - _Shininess0: 32
     - _Shininess1: 32
     - _Shininess2: 32

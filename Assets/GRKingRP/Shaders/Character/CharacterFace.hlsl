@@ -7,6 +7,8 @@ TEXTURE2D(_FaceMap); SAMPLER(sampler_FaceMap);
 
 // 所有 Pass 保持同一份 UnityPerMaterial 布局。
 CBUFFER_START(UnityPerMaterial)
+    float _SelfShadowDepthBias;
+    float _SelfShadowNormalBias;
     float4 _BaseMap_ST;
     half4 _BaseColor;
     half4 _BackColor;
@@ -48,12 +50,7 @@ half4 CharacterFaceFragment(CharacterVaryings input) : SV_Target
     float2 faceUV = _FaceMapUseUV2 > 0.5 ? input.uv.zw : input.uv.xy;
     half4 faceMap = SAMPLE_TEXTURE2D(_FaceMap, sampler_FaceMap, faceUV);
 
-#if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
-    float4 shadowCoord = ComputeScreenPos(TransformWorldToHClip(input.positionWS));
-#else
-    float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
-#endif
-    Light light = GetMainLight(shadowCoord);
+    Light light = GetCharacterMainLight(input.positionWS);
     if (_GRKingHairShadowEnabled > 0.5 && _ReceiveFrontHairShadow > 0.5)
     {
         float hairShadow = GetCharacterFrontHairShadow(

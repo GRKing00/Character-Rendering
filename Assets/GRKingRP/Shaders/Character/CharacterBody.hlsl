@@ -10,6 +10,9 @@ TEXTURE2D(_StockingsMap); SAMPLER(sampler_StockingsMap);
 
 // 所有 Pass 保持同一份 UnityPerMaterial 布局。
 CBUFFER_START(UnityPerMaterial)
+    float _GRKingShadowCasterId;
+    float _SelfShadowDepthBias;
+    float _SelfShadowNormalBias;
     float4 _BaseMap_ST;
     half4 _BaseColor;
     half4 _BackColor;
@@ -120,12 +123,9 @@ half4 CharacterBodyFragment(CharacterVaryings input,
     float3 viewWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
     float noV = saturate(dot(normalWS, viewWS));
     baseColor.rgb = ApplyCharacterStockings(baseColor.rgb, uv, noV);
-#if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
-    float4 shadowCoord = ComputeScreenPos(TransformWorldToHClip(input.positionWS));
-#else
-    float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
-#endif
-    Light light = GetMainLight(shadowCoord);
+    Light light = GetCharacterMainLight(input.positionWS);
+    light.shadowAttenuation = min(light.shadowAttenuation,
+        SampleGRKingSelfShadow(input.positionWS, _GRKingShadowCasterId));
     float3 halfWS = SafeNormalize(light.direction + viewWS);
     float noL = dot(normalWS, light.direction);
     half3 color = GetCharacterDiffuse(baseColor.rgb, lightMap, input.color.r,

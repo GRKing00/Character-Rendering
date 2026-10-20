@@ -2,6 +2,7 @@ Shader "GRKingRP/Character/Body"
 {
     Properties
     {
+        [HideInInspector] _GRKingShadowCasterId("Shadow Caster ID", Float) = 0
         [Main(Surface, _, on, off)] _Surface("Surface", Float) = 0
         [Tex(Surface, _BaseColor)] _BaseMap("Base Map", 2D) = "white" {}
         [HideInInspector] _BaseColor("Base Color", Color) = (1,1,1,1)
@@ -42,6 +43,10 @@ Shader "GRKingRP/Character/Body"
         [Sub(Stockings)] _StockingsLightWidth("Highlight Width", Range(1,32)) = 1
         [Sub(Stockings)] _StockingsLightIntensity("Highlight Intensity", Range(0,1)) = 0.25
         [Sub(Stockings)] _StockingsRoughness("Roughness", Range(0,1)) = 1
+
+        [Main(SelfShadowCaster, _, on, off)] _SelfShadowCaster("Self Shadow Caster", Float) = 0
+        [Sub(SelfShadowCaster)] _SelfShadowDepthBias("Depth Bias (World Units)", Float) = -0.01
+        [Sub(SelfShadowCaster)] _SelfShadowNormalBias("Normal Bias (World Units)", Float) = 0
 
         [Main(Outline, _, on, off)] _Outline("Outline", Float) = 0
         [SubToggle(Outline)] _OutlineEnabled("Enabled", Float) = 1
@@ -109,7 +114,7 @@ Shader "GRKingRP/Character/Body"
     }
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry+5" }
         HLSLINCLUDE
         #include "CharacterBody.hlsl"
         ENDHLSL
@@ -170,8 +175,8 @@ Shader "GRKingRP/Character/Body"
         }
         Pass
         {
-            Name "ShadowCaster"
-            Tags { "LightMode"="ShadowCaster" }
+            Name "CharacterShadowCaster"
+            Tags { "LightMode"="GRKingCharacterShadowCaster" }
             Cull [_Cull]
             ZWrite On
             ZTest LEqual
@@ -181,7 +186,7 @@ Shader "GRKingRP/Character/Body"
             #pragma vertex CharacterShadowVertex
             #pragma fragment CharacterDepthFragment
             #pragma shader_feature_local_fragment _ _ALPHATEST_ON
-            #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+            #pragma multi_compile_vertex _ _GRKING_CASTING_SELF_SHADOW
             #pragma multi_compile_instancing
             ENDHLSL
         }

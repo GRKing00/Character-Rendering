@@ -3,6 +3,28 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#include "../../../ShaderLibrary/PerObjectShadows.hlsl"
+
+int _GRKingMainLightShadowCascadeCount;
+
+Light GetCharacterMainLight(float3 positionWS)
+{
+    Light light = GetMainLight();
+#if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+    // 角色不读取 Scene Atlas 合成的屏幕阴影，直接接收场景级联阴影。
+    // 屏幕阴影开启后 URP 会关闭 CASCADE 关键字，所以由 CPU 提供实际级联数量。
+    int cascadeIndex = _GRKingMainLightShadowCascadeCount > 1
+        ? (int)ComputeCascadeIndex(positionWS) : 0;
+    float4 coord = float4(mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0)).xyz, 0.0);
+    ShadowSamplingData sampling = GetMainLightShadowSamplingData();
+    sampling.softShadowQuality = SOFT_SHADOW_QUALITY_LOW;
+    light.shadowAttenuation = SampleShadowmap(
+        TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_LinearClampCompare),
+        coord, sampling, GetMainLightShadowParams(), false);
+    light.shadowAttenuation = lerp(light.shadowAttenuation, 1.0h, GetMainLightShadowFade(positionWS));
+#endif
+    return light;
+}
 
 struct CharacterAttributes
 {
